@@ -1,49 +1,162 @@
-# JtNx
+# Job Tracker Application
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A full-stack job application tracking system built with NX Monorepo.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This application helps users track and manage their job applications with a modern, responsive UI. It includes user authentication, job application management, and a GraphQL API middleware.
 
-## Run tasks
+## Architecture
 
-To run tasks with Nx use:
+This project is built using an NX Monorepo with the following components:
 
-```sh
-npx nx <target> <project-name>
+1. **Frontend**: Next.js application with React components, Apollo Client, authentication context, and a responsive UI for tracking job applications
+2. **Middle Tier**: GraphQL API using Apollo Server that acts as a gateway between frontend and backend services
+3. **Backend Services**:
+   - User Service: Express.js REST API for user authentication (register, login)
+   - Job Tracker Service: Express.js REST API for job application management (CRUD operations)
+4. **Shared Libraries**:
+   - shared-models: TypeScript interfaces and types shared across the stack
+   - shared-utils: Utility functions for authentication and common operations
+
+## Prerequisites
+
+- Node.js (v16+)
+- MongoDB (running locally or remotely)
+- npm or yarn
+
+## Running the Application
+
+### 1. Start MongoDB
+
+Make sure MongoDB is running, either locally or via a remote connection. Update the MongoDB connection strings in the `.env` files if necessary.
+
+### 2. Start the Services
+
+Run each service in a separate terminal window in the following order:
+
+```bash
+# Start User Service
+npx nx serve user-service
+
+# Start Job Tracker Service
+npx nx serve job-tracker-service
+
+# Start GraphQL API
+npx nx serve graphql-api
+
+# Start Frontend
+npx nx serve frontend
 ```
 
-For example:
+## Deployment to GitHub
 
-```sh
-npx nx build myproject
+### Initial Setup
+
+1. Create a new GitHub repository
+2. Configure your local repository and push to GitHub:
+   ```bash
+   git remote add origin https://github.com/yourusername/your-repo-name.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+### Security Considerations
+
+Before deploying to GitHub:
+
+1. Ensure `.env` files are ignored in `.gitignore` (already configured)
+2. Use environment variables for all sensitive information
+3. Review code for hardcoded credentials or API keys
+4. Set up proper branch protection rules in GitHub
+
+## Environment Variables
+
+Create a `.env` file based on the `.env.example` template. The following variables are required:
+
+```
+MONGO_URI=mongodb://localhost:27017/jobtracker
+JWT_SECRET=your-secret-key-here
+PORT=4000
+HOST=localhost
+USER_SERVICE_URL=http://localhost:3333/api/
+NEXT_PUBLIC_GRAPHQL_URI=http://localhost:4000/graphql
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+**IMPORTANT**: Never commit your actual `.env` file to version control.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### 3. Access the Application
 
-## Add new projects
+Once all services are running, you can access the application at:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+- Frontend: http://localhost:4200
+- GraphQL API and Playground: http://localhost:4000/graphql
+- User Service API: http://localhost:3333/api
+- Job Tracker Service API: http://localhost:3334/api
 
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+## Features
+
+### Frontend
+
+- Landing page with login/registration links
+- User authentication (login/register) with form validation
+- Protected dashboard for authenticated users
+- Job application table with filtering and sorting
+- Create, view, edit, and delete job applications
+- Status tracking for job applications (Applied, Interview, Offer, etc.)
+- Responsive design using Tailwind CSS
+
+### Backend
+
+- User authentication with JWT token
+- GraphQL API for unified data access
+- RESTful services for user and job application management
+- MongoDB integration for data storage
+- Shared code between services using NX libraries
+
+## Project Structure
+
+```
+/apps
+  /frontend               # NextJS frontend application
+    /src/app              # Next.js App Router structure
+      /components         # React components
+      /contexts           # React contexts (auth)
+      /graphql            # GraphQL queries/mutations
+  /graphql-api            # Apollo Server GraphQL middleware
+    /src/app
+      /datasources        # Apollo data sources connecting to backend services
+      /resolvers          # GraphQL resolvers
+      /schemas            # GraphQL schema definitions
+  /user-service           # User authentication service
+    /src/app
+      /controllers        # Request handlers
+      /routes             # API endpoint definitions
+      /schemas            # MongoDB schemas
+  /job-tracker-service    # Job application management service
+    /src/app
+      /controllers        # Request handlers
+      /routes             # API endpoint definitions
+      /schemas            # MongoDB schemas
+/libs
+  /shared-models         # Shared TypeScript interfaces and types
+  /shared-utils          # Shared utility functions
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+## Development
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
+To run the application in development mode, use the commands in the "Running the Application" section. NX provides helpful commands for developing in a monorepo:
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
+```bash
+# Get a visual representation of your project dependencies
+npx nx graph
+
+# Run tests across the monorepo
+npx nx run-many --target=test --all
+
+# Generate a new library
+npx nx g @nx/js:lib new-shared-lib
 ```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
 
 [Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 

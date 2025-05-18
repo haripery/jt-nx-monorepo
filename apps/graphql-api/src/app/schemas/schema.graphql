@@ -1,0 +1,96 @@
+type User {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+enum ApplicationStatus {
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+  ACCEPTED
+}
+
+type JobApplication {
+  id: ID!
+  company: String!
+  position: String!
+  location: String!
+  appliedDate: String!
+  status: ApplicationStatus!
+  notes: String
+  contactName: String
+  contactEmail: String
+  nextFollowUp: String
+  salary: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+input UserInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input JobApplicationInput {
+  company: String!
+  position: String!
+  location: String!
+  appliedDate: String!
+  status: ApplicationStatus!
+  notes: String
+  contactName: String
+  contactEmail: String
+  nextFollowUp: String
+  salary: String
+}
+
+input JobApplicationUpdateInput {
+  id: ID!
+  company: String
+  position: String
+  location: String
+  appliedDate: String
+  status: ApplicationStatus
+  notes: String
+  contactName: String
+  contactEmail: String
+  nextFollowUp: String
+  salary: String
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type Query {
+  # User queries
+  me: User
+  
+  # Job application queries
+  applications: [JobApplication]!
+  application(id: ID!): JobApplication
+}
+
+type Mutation {
+  # Auth mutations
+  register(input: UserInput!): AuthPayload!
+  login(input: LoginInput!): AuthPayload!
+  
+  # Job application mutations
+  createApplication(input: JobApplicationInput!): JobApplication!
+  updateApplication(input: JobApplicationUpdateInput!): JobApplication!
+  deleteApplication(id: ID!): Boolean!
+}
