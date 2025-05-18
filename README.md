@@ -49,6 +49,75 @@ npx nx serve graphql-api
 npx nx serve frontend
 ```
 
+## Deployment to AWS using CDK
+
+This application can be deployed to AWS using the AWS Cloud Development Kit (CDK). The infrastructure is defined as code in the `infra/cdk` directory.
+
+### Prerequisites for AWS Deployment
+
+- AWS CLI installed and configured with appropriate permissions
+- AWS CDK installed (`npm install -g aws-cdk`)
+- Docker installed and running (for building container images)
+
+### AWS Infrastructure Components
+
+The AWS deployment includes:
+
+1. **Network Stack**: VPC, subnets, security groups, and ECS cluster
+2. **Database Stack**: MongoDB-compatible Amazon DocumentDB in a private subnet
+3. **Services Stack**: ECS Fargate services for each microservice with load balancing
+4. **Frontend Stack**: CloudFront distribution with S3 bucket for the Next.js application
+
+### Deployment Steps
+
+1. Make sure you have AWS CLI configured with the right credentials:
+   ```bash
+   aws configure
+   ```
+
+2. Run the deployment script:
+   ```bash
+   cd infra/cdk
+   ./deploy.sh
+   ```
+
+3. The script will:
+   - Bootstrap CDK in your AWS account
+   - Deploy the network infrastructure
+   - Deploy the database
+   - Build and push Docker images for each microservice
+   - Deploy the microservices
+   - Build and deploy the frontend
+
+4. After deployment completes, the script will output the URLs for accessing your application.
+
+### Manual Deployment
+
+If you prefer to deploy manually or in stages:
+
+```bash
+# Deploy network stack
+cdk deploy JobTrackerNetworkStack
+
+# Deploy database stack
+cdk deploy JobTrackerDatabaseStack
+
+# Deploy services stack
+cdk deploy JobTrackerServicesStack
+
+# Deploy frontend stack
+cdk deploy JobTrackerFrontendStack
+```
+
+### Infrastructure Updates
+
+To update the infrastructure after making changes to the CDK code:
+
+```bash
+cdk diff     # See what changes will be applied
+cdk deploy   # Deploy all stacks
+```
+
 ## Deployment to GitHub
 
 ### Initial Setup
